@@ -5,8 +5,27 @@ oc apply -k https://github.com/gmeghnag/reproducer-03544800.git
 oc logs -n rh-case-03544800 $(oc get po -n rh-case-03544800 -o jsonpath='{.items[0].metadata.name}') -f | jq
 ```
 
+## Expected output
+```
+{
+  "DateTimeUTC": "2023-07-25T12:16:59Z",
+  "Node": "ip-10-0-129-153.eu-central-1.compute.internal",
+  "Namespace": "ocpbugs-16650",
+  "PodName": "ocpbugs-16650-3-build",
+  "UsedGB": "20.018962860107422"
+}
+{
+  "DateTimeUTC": "2023-07-25T12:17:20Z",
+  "Node": "ip-10-0-129-153.eu-central-1.compute.internal",
+  "Namespace": "ocpbugs-16650",
+  "PodName": "ocpbugs-16650-3-build",
+  "UsedGB": "20.018962860107422"
+}
+..
+```
 
-How-to-test
+## How to test
 ```
 curl -sk https://raw.githubusercontent.com/gmeghnag/OCPBUGS-16650/main/Dockerfile | oc new-build --to=ocpbugs-16650 -D  -
 ```
+
