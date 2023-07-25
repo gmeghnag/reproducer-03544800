@@ -27,7 +27,7 @@ spec:
           - |
             set -euo pipefail
             trap 'jobs -p | xargs -r kill; exit 0' TERM
-            while true; do oc get node -l node-role.kubernetes.io/worker= -o json| jq '.items[].metadata.name' -r | while read NODE; do printf "========\nDate     : $(date)\nNode     : $NODE\n" && oc get --raw /api/v1/nodes/${NODE}/proxy/stats/summary  | jq '.pods[] | . as $parent | select($parent.podRef.name| contains("build")) | "Namespace: " + $parent.podRef.namespace + "\n" + "PodName  : " + $parent.podRef.name + "\n" + "UsedGB   : " + ($parent."ephemeral-storage".usedBytes/1024/1024/1024|tostring)' -r; done && sleep 15; done
+            while true; do oc get node -l node-role.kubernetes.io/worker= -o json| jq '.items[].metadata.name' -r | while read NODE; do oc get --raw /api/v1/nodes/${NODE}/proxy/stats/summary  | jq --arg nodeName $NODE --arg dateTime date '.pods[] | . as $parent | select($parent.podRef.name| contains("build")) | "{\"Node\": \"" + $nodeName + "\", \"Namespace\": \"" + $parent.podRef.namespace + "\"," + " \"PodName\": \"" + $parent.podRef.name + "\"," + " \"UsedGB\": \"" + ($parent."ephemeral-storage".usedBytes/1024/1024/1024|tostring) + "\"}"' -r; done && sleep 15; done
         resources:
           limits:
             cpu: 100m
