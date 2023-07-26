@@ -22,6 +22,8 @@ spec:
         env:
         - name: NAMESPACE
           value: "default"
+        - name: SLEEP_INTERVAL
+          value: "15"
         image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3419113034d82047e5fe993821bf5027c0b436f41121898ea534a1b116534687
         imagePullPolicy: IfNotPresent
         command:
@@ -29,8 +31,7 @@ spec:
           - -c
           - |
             set -euo pipefail
-            trap 'jobs -p | xargs -r kill; exit 0' TERM
-            while true; do oc get node -l node-role.kubernetes.io/worker= -o json| jq '.items[].metadata.name' -r | while read NODE; do oc get --raw /api/v1/nodes/${NODE}/proxy/stats/summary  | jq --arg nodeName $NODE --arg namespace $NAMESPACE '.pods[] | . as $parent | select($parent.podRef.name| contains("build")) | select($parent.podRef.namespace| contains($namespace)) | "{\"DateTimeUTC\": \"" + (now | todateiso8601) + "\", \"Node\": \"" + $nodeName + "\", \"Namespace\": \"" + $parent.podRef.namespace + "\"," + " \"PodName\": \"" + $parent.podRef.name + "\"," + " \"UsedGB\": \"" + ($parent."ephemeral-storage".usedBytes/1024/1024/1024|tostring) + "\"}"' -r; done && sleep 15; done
+            while true; do oc get node -l node-role.kubernetes.io/worker= -o json| jq '.items[].metadata.name' -r | while read NODE; do oc get --raw /api/v1/nodes/${NODE}/proxy/stats/summary  | jq --arg nodeName $NODE --arg namespace $NAMESPACE '.pods[] | . as $parent | select($parent.podRef.name| contains("build")) | select($parent.podRef.namespace| contains($namespace)) | "{\"DateTimeUTC\": \"" + (now | todateiso8601) + "\", \"Node\": \"" + $nodeName + "\", \"Namespace\": \"" + $parent.podRef.namespace + "\"," + " \"PodName\": \"" + $parent.podRef.name + "\"," + " \"UsedGB\": \"" + ($parent."ephemeral-storage".usedBytes/1024/1024/1024|tostring) + "\"}"' -r; done && sleep $SLEEP_INTERVAL; done
         resources:
           limits:
             cpu: 100m
