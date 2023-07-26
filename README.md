@@ -10,14 +10,14 @@ oc logs -n rh-case-03544800 $(oc get po -l app=builds-pods-storage-collector -n 
 {
   "DateTimeUTC": "2023-07-25T12:16:59Z",
   "Node": "ip-10-0-129-153.eu-central-1.compute.internal",
-  "Namespace": "ocpbugs-16650",
+  "Namespace": "default",
   "PodName": "ocpbugs-16650-3-build",
   "UsedGB": "20.018962860107422"
 }
 {
   "DateTimeUTC": "2023-07-25T12:17:20Z",
   "Node": "ip-10-0-129-153.eu-central-1.compute.internal",
-  "Namespace": "ocpbugs-16650",
+  "Namespace": "default",
   "PodName": "ocpbugs-16650-3-build",
   "UsedGB": "20.018962860107422"
 }
@@ -26,6 +26,6 @@ oc logs -n rh-case-03544800 $(oc get po -l app=builds-pods-storage-collector -n 
 
 ## How to test
 ```
-curl -sk https://raw.githubusercontent.com/gmeghnag/OCPBUGS-16650/main/Dockerfile | oc new-build --to=ocpbugs-16650 -D  -
+curl -sk https://raw.githubusercontent.com/gmeghnag/OCPBUGS-16650/main/Dockerfile | oc new-build -n default --to=ocpbugs-16650 -D  -
 ```
 
